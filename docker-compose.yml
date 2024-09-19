@@ -1,0 +1,21 @@
+version: '3'
+services:
+  app:
+    image: ajb3932/simple-wishlist
+    ports:
+      - "8092:8092"
+    environment:
+      - DB="mongodb:27017"
+      - CURRENCY=USD
+      - LIST_NAME=My Wishlist
+      - LIST_TYPE=bday
+    depends_on:
+      - mongodb
+
+  mongodb:
+    image: mongo:latest
+    volumes:
+      - mongodb_data:/data/db
+
+volumes:
+  mongodb_data:

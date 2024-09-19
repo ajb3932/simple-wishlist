@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - Add/Delete Items</title>
+    <link rel="icon" type="image/x-icon" href="/images/<%= listType %>">
+    <link rel="stylesheet" href="/styles.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/js/all.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <h1>Add an Item to the Wishlist</h1>
+        <form action="/admin/add-item" method="POST" id="addItemForm">
+            <label for="name">Name:</label>
+            <input type="text" id="name" name="name" required>
+            <label for="price">Price:</label>
+            <input type="number" id="price" name="price" step="0.01" min="0" required>
+            <label for="url">URL:</label>
+            <input type="url" id="url" name="url" required>
+            <label for="imageUrl">Image URL:</label>
+            <input type="url" id="imageUrl" name="imageUrl" required>
+            <button type="submit">Add Item</button>
+        </form>
+
+        <h2>Current Wishlist Items</h2>
+        <div class="table-responsive">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Price</th>
+                        <th>URL</th>
+                        <th>Image</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% items.forEach(item => { %>
+                    <tr>
+                        <td><%= item.name %></td>
+                        <td><%= currencySymbol %><%= item.price %></td>
+                        <td><a href="<%= item.url %>" target="_blank">View</a></td>
+                        <td><div class="img-container"><img src="<%= item.imageUrl %>" alt="<%= item.name %>"></div></td>
+                        <td>
+                            <form action="/admin/delete-item/<%= item._id %>" method="POST" onsubmit="return confirm('Are you sure you want to delete this item?');">
+                                <button type="submit" class="delete-btn"><i class="fas fa-trash-alt"></i></button>
+                            </form>
+                        </td>
+                    </tr>
+                    <% }); %>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('addItemForm').addEventListener('submit', function(event) {
+            const urlInput = document.getElementById('url');
+            const imageUrlInput = document.getElementById('imageUrl');
+            
+            if (!isValidUrl(urlInput.value) || !isValidUrl(imageUrlInput.value)) {
+                event.preventDefault();
+                alert('Please enter valid URLs for both URL and Image URL fields.');
+            }
+        });
+
+        function isValidUrl(url) {
+            try {
+                new URL(url);
+                return true;
+            } catch (error) {
+                return false;
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <link rel="icon" type="image/x-icon" href="/images/<%= listType %>">
+    <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Admin Login</h1>
+        <form action="/login" method="POST" id="login-form">
+            <label for="username">Username:</label>
+            <input type="text" id="username" name="username" autocomplete="username" required autofocus data-lpignore="true">
+
+            <label for="current-password">Password:</label>
+            <input type="password" id="current-password" name="password" autocomplete="current-password" required data-lpignore="true">
+            
+            <button type="submit">Login</button>
+        </form>
+    </div>
+</body>
+</html>

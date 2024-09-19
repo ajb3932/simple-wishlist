@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/x-icon" href="/images/<%= listType %>">
+    <title><%= listName %></title>
+    <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <img src="/images/<%= listType %>" alt="Wishlist Logo" class="logo">
+            <h1><%= listName %></h1>
+        </div>
+        <div class="table-responsive">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Image</th>
+                        <th>Name</th>
+                        <th>Price (<%= currency %>)</th>
+                        <th>URL</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% wishlistItems.forEach(item => { %>
+                    <tr>
+                        <td data-label="Image"><div class="img-container"><img src="<%= item.imageUrl %>" alt="<%= item.name %>"></div></td>
+                        <td data-label="Name"><%= item.name %></td>
+                        <td data-label="Price"><%= currencySymbol %><%= item.price %></td>
+                        <td data-label="URL"><a href="<%= item.url %>">View</a></td>
+                        <td data-label="Action">
+                            <form action="/purchase/<%= item._id %>" method="POST">
+                                <button type="submit">Purchased</button>
+                            </form>
+                        </td>
+                    </tr>
+                    <% }); %>
+                </tbody>
+            </table>
+        </div>
+
+        <h1>Purchased Items</h1>
+        <div class="table-responsive">
+            <table class="purchased-table">
+                <thead>
+                    <tr>
+                        <th>Image</th>
+                        <th>Name</th>
+                        <th>Price (<%= currency %>)</th>
+                        <th>URL</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% purchasedItems.forEach(item => { %>
+                    <tr>
+                        <td data-label="Image"><div class="img-container"><img src="<%= item.imageUrl %>" alt="<%= item.name %>"></div></td>
+                        <td data-label="Name"><%= item.name %></td>
+                        <td data-label="Price"><%= currencySymbol %><%= item.price %></td>
+                        <td data-label="URL"><a href="<%= item.url %>">View</a></td>
+                        <td data-label="Action">
+                            <form action="/restore/<%= item._id %>" method="POST">
+                                <button type="submit">Restore</button>
+                            </form>
+                        </td>
+                    </tr>
+                    <% }); %>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</body>
+</html>

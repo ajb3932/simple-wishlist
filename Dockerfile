@@ -10,6 +10,4 @@ COPY . .
 
 EXPOSE 8092
 
-USER nonroot
-
 CMD [ "node", "server.js" ]

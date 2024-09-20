@@ -42,10 +42,10 @@ const connectWithRetry = (retries) => {
     })
     .catch((err) => {
         if (retries > 0) {
-            console.log(`MongoDB connection failed. Retrying... (${retries} attempts left)`);
+            console.log(`MongoDB connection to ${DB_HOST}:${DB_PORT} failed. Retrying... (${retries} attempts left)`);
             setTimeout(() => connectWithRetry(retries - 1), 5000);
         } else {
-            console.error('Failed to connect to MongoDB after multiple attempts. Shutting down...');
+            console.error(`Failed to connect to ${DB_HOST}:${DB_PORT} after multiple attempts. Shutting down...`);
             process.exit(1);
         }
     });
@@ -265,13 +265,15 @@ app.post('/restore/:id', async (req, res) => {
     }
 });
 
-app.listen(PORT, () => {
-    console.log(`Server running on http://localhost:${PORT}`);
-});
+
 
 process.on('SIGINT', () => {
     mongoose.connection.close(() => {
         console.log('MongoDB connection closed through app termination');
         process.exit(0);
     });
+});
+
+app.listen(PORT, () => {
+    console.log(`Server running on http://localhost:${PORT}`);
 });

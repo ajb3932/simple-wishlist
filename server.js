@@ -39,12 +39,12 @@ const connectWithRetry = (retries) => {
         console.log('Connected to MongoDB');
     })
     .catch((err) => {
-        console.error('MongoDB connection error:', err);
+        console.error(`MongoDB connection error (${DB}):`, err);
         if (retries > 0) {
-            console.log(`MongoDB connection failed. Retrying... (${retries} attempts left)`);
+            console.log(`MongoDB connection failed (${DB}). Retrying... (${retries} attempts left)`);
             setTimeout(() => connectWithRetry(retries - 1), 1000); // Wait for 1 second before retrying
         } else {
-            console.error('Failed to connect to MongoDB after multiple attempts. Shutting down...');
+            console.error(`Failed to connect to MongoDB (${DB}) after multiple attempts. Shutting down...`);
             process.exit(1);
         }
     });

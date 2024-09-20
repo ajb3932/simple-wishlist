@@ -13,9 +13,8 @@ const app = express();
 
 const CURRENCY = process.env.CURRENCY || 'GBP';
 const LIST_NAME = process.env.LIST_NAME || 'My Wishlist';
-const LIST_TYPE = process.env.LIST_TYPE || 'bday';
-const DB_HOST = process.env.DB_HOST || 'localhost';
-const DB_PORT = process.env.DB_PORT || '27017';
+const LIST_TYPE = process.env.LIST_TYPE || 'xmas';
+const DB = process.env.DB || 'localhost:27017';
 const PORT = process.env.PORT || 8092;
 
 // Currency symbols mapping
@@ -33,24 +32,25 @@ const occasion = {
 };
 
 const connectWithRetry = (retries) => {
-    return mongoose.connect(`mongodb://${DB_HOST}:${DB_PORT}/simple-wishlist`, {
-        serverSelectionTimeoutMS: 5000,
+    return mongoose.connect(`mongodb://${DB}`, {
+        serverSelectionTimeoutMS: 3000,
     })
     .then(() => {
         console.log('Connected to MongoDB');
-        startServer();
     })
     .catch((err) => {
+        console.error('MongoDB connection error:', err);
         if (retries > 0) {
-            console.log(`MongoDB connection to ${DB_HOST}:${DB_PORT} failed. Retrying... (${retries} attempts left)`);
-            setTimeout(() => connectWithRetry(retries - 1), 5000);
+            console.log(`MongoDB connection failed. Retrying... (${retries} attempts left)`);
+            setTimeout(() => connectWithRetry(retries - 1), 1000); // Wait for 1 second before retrying
         } else {
-            console.error(`Failed to connect to ${DB_HOST}:${DB_PORT} after multiple attempts. Shutting down...`);
+            console.error('Failed to connect to MongoDB after multiple attempts. Shutting down...');
             process.exit(1);
         }
     });
 };
 
+// Start the connection process with 5 retries
 connectWithRetry(3);
 
 app.use(session({
@@ -263,15 +263,6 @@ app.post('/restore/:id', async (req, res) => {
         console.error('Error restoring item:', error);
         res.status(500).send('Error restoring item');
     }
-});
-
-
-
-process.on('SIGINT', () => {
-    mongoose.connection.close(() => {
-        console.log('MongoDB connection closed through app termination');
-        process.exit(0);
-    });
 });
 
 app.listen(PORT, () => {

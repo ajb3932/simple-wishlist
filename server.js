@@ -13,8 +13,9 @@ const app = express();
 
 const CURRENCY = process.env.CURRENCY || 'GBP';
 const LIST_NAME = process.env.LIST_NAME || 'My Wishlist';
-const LIST_TYPE = process.env.LIST_TYPE || 'xmas';
-const DB = process.env.DB || 'localhost:27017';
+const LIST_TYPE = process.env.LIST_TYPE || 'bday';
+const DB_HOST = process.env.DB_HOST || 'localhost';
+const DB_PORT = process.env.DB_PORT || '27017';
 const PORT = process.env.PORT || 8092;
 
 // Currency symbols mapping
@@ -31,9 +32,26 @@ const occasion = {
     'wedding': 'wishlist-wedding.png',
 };
 
-mongoose.connect(`mongodb://${DB}/simple-wishlist`, {
-}).then(() => console.log('Connected to MongoDB'))
-  .catch(err => console.error('MongoDB connection error:', err));
+const connectWithRetry = (retries) => {
+    return mongoose.connect(`mongodb://${DB_HOST}:${DB_PORT}/simple-wishlist`, {
+        serverSelectionTimeoutMS: 5000,
+    })
+    .then(() => {
+        console.log('Connected to MongoDB');
+        startServer();
+    })
+    .catch((err) => {
+        if (retries > 0) {
+            console.log(`MongoDB connection failed. Retrying... (${retries} attempts left)`);
+            setTimeout(() => connectWithRetry(retries - 1), 5000);
+        } else {
+            console.error('Failed to connect to MongoDB after multiple attempts. Shutting down...');
+            process.exit(1);
+        }
+    });
+};
+
+connectWithRetry(3);
 
 app.use(session({
     secret: process.env.SESSION_SECRET || 'yjtfkuhgkuygibjlljbvkuvykjvjlkvv',
@@ -249,4 +267,11 @@ app.post('/restore/:id', async (req, res) => {
 
 app.listen(PORT, () => {
     console.log(`Server running on http://localhost:${PORT}`);
+});
+
+process.on('SIGINT', () => {
+    mongoose.connection.close(() => {
+        console.log('MongoDB connection closed through app termination');
+        process.exit(0);
+    });
 });

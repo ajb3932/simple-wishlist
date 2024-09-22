@@ -10,6 +10,8 @@ const Item = require('./models/Item');
 const User = require('./models/User');
 
 const app = express();
+const flash = require('express-flash');
+
 
 const CURRENCY = process.env.CURRENCY || 'GBP';
 const LIST_NAME = process.env.LIST_NAME || 'My Wishlist';

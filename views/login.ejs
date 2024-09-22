@@ -9,6 +9,18 @@
 </head>
 <body>
     <div class="container">
+        <% if (messages.error && messages.error.length > 0) { %>
+            <div class="alert alert-danger">
+                <%= messages.error %>
+            </div>
+        <% } %>
+
+        <% if (messages.success && messages.success.length > 0) { %>
+            <div class="alert alert-success">
+                <%= messages.success %>
+            </div>
+        <% } %>
+
         <h1>Admin Login</h1>
         <form action="/login" method="POST" id="login-form">
             <label for="username">Username:</label>

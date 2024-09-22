@@ -6,6 +6,8 @@ WORKDIR /usr/src/app
 # Copy package.json and package-lock.json
 COPY package*.json ./
 
+RUN echo hello
+
 # Install dependencies
 RUN npm install --production
 

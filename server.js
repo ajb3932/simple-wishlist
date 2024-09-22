@@ -154,7 +154,11 @@ app.post('/setup', [
 
 app.get('/login', (req, res) => {
     res.render('login', {
-        listType: occasion[LIST_TYPE]
+        listType: occasion[LIST_TYPE],
+        messages: {
+            error: req.flash('error'),
+            success: req.flash('success')
+        }
     });
 });
 

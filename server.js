@@ -130,7 +130,7 @@ app.get('/setup', async (req, res) => {
 
 app.post('/setup', [
     body('username').trim().isLength({ min: 3 }).escape(),
-    body('password').isLength({ min: 8 })
+    body('password').isLength({ min: 4 })
 ], async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {

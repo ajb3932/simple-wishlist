@@ -1,3 +1,4 @@
+require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
 const session = require('express-session');
@@ -8,7 +9,6 @@ const { body, validationResult } = require('express-validator');
 const sanitizeHtml = require('sanitize-html');
 const Item = require('./models/Item');
 const User = require('./models/User');
-
 const app = express();
 const flash = require('express-flash');
 
@@ -16,7 +16,8 @@ const flash = require('express-flash');
 const CURRENCY = process.env.CURRENCY || 'GBP';
 const LIST_NAME = process.env.LIST_NAME || 'My Wishlist';
 const LIST_TYPE = process.env.LIST_TYPE || 'xmas';
-const DB = process.env.DB || 'localhost:27017';
+const DBHOST = process.env.DBHOST || 'localhost:27017';
+const DBNAME = process.env.DBNAME || 'simple-wishlist';
 const PORT = process.env.PORT || 8092;
 
 // Currency symbols mapping
@@ -34,19 +35,21 @@ const occasion = {
 };
 
 const connectWithRetry = (retries) => {
-    return mongoose.connect(`mongodb://${DB}`, {
+    return mongoose.connect(`mongodb://${DBHOST}/${DBNAME}`, {
         serverSelectionTimeoutMS: 3000,
     })
     .then(() => {
         console.log('Connected to MongoDB');
     })
     .catch((err) => {
-        console.error(`MongoDB connection error (${DB}):`, err);
         if (retries > 0) {
-            console.log(`MongoDB connection failed (${DB}). Retrying... (${retries} attempts left)`);
-            setTimeout(() => connectWithRetry(retries - 1), 1000); // Wait for 1 second before retrying
+            console.log(`MongoDB connection failed: (mongodb://${DBHOST}/${DBNAME}).`);
+            console.log(`Retrying... (${retries} attempts left)`);
+            setTimeout(() => connectWithRetry(retries - 1), 1000);
         } else {
-            console.error(`Failed to connect to MongoDB (${DB}) after multiple attempts. Shutting down...`);
+            console.error(`Failed to connect to (mongodb://${DBHOST}/${DBNAME}) after multiple attempts.`);
+            console.error(err);
+            console.error('App Shutting Down...');
             process.exit(1);
         }
     });
@@ -60,6 +63,8 @@ app.use(session({
     resave: false,
     saveUninitialized: false
 }));
+
+app.use(flash());
 
 app.use(passport.initialize());
 app.use(passport.session());

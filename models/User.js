@@ -1,15 +1,18 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
 
-const UserSchema = new mongoose.Schema({
-    username: { type: String, required: true, unique: true },
-    password: { type: String, required: true }
+const userSchema = new mongoose.Schema({
+  username: String,
+  password: String
 });
 
-UserSchema.pre('save', async function(next) {
-    if (!this.isModified('password')) return next();
-    this.password = await bcrypt.hash(this.password, 10);
-    next();
+userSchema.pre('save', function(next) {
+  console.log('Pre-save hook triggered');
+  console.log('Username:', this.username);
+  console.log('Password (should be hashed):', this.password);
+  next();
 });
 
-module.exports = mongoose.model('User', UserSchema);
+const User = mongoose.model('User', userSchema);
+
+module.exports = User;

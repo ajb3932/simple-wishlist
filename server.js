@@ -12,7 +12,6 @@ const User = require('./models/User');
 const app = express();
 const flash = require('express-flash');
 
-
 const CURRENCY = process.env.CURRENCY || 'GBP';
 const LIST_NAME = process.env.LIST_NAME || 'My Wishlist';
 const LIST_TYPE = process.env.LIST_TYPE || 'xmas';
@@ -55,7 +54,7 @@ const connectWithRetry = (retries) => {
     });
 };
 
-// Start the connection process with 5 retries
+// Start the connection process with 3 retries
 connectWithRetry(3);
 
 app.use(session({
@@ -75,8 +74,10 @@ app.use(express.static('public'));
 
 passport.use(new LocalStrategy(async (username, password, done) => {
     try {
+        console.log('Login attempt for username:', username);
         const user = await User.findOne({ username: username });
         if (!user) {
+            console.log('User not found:', username);
             return done(null, false, { message: 'Incorrect username.' });
         }
         const isValid = await bcrypt.compare(password, user.password);
@@ -85,6 +86,7 @@ passport.use(new LocalStrategy(async (username, password, done) => {
         }
         return done(null, user);
     } catch (err) {
+        console.error('Error during login:', err);
         return done(err);
     }
 }));
@@ -137,23 +139,35 @@ app.get('/setup', async (req, res) => {
 
 app.post('/setup', [
     body('username').trim().isLength({ min: 3 }).escape(),
-    body('password').isLength({ min: 4 })
+    body('password').trim().isLength({ min: 4 })
 ], async (req, res) => {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-        return res.status(400).json({ errors: errors.array() });
-    }
+    try {
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            console.log('Validation errors:', errors.array());
+            return res.status(400).json({ errors: errors.array() });
+        }
 
-    const adminCount = await User.countDocuments();
-    if (adminCount === 0) {
-        const { username, password } = req.body;
-        const hashedPassword = await bcrypt.hash(password, 10);
-        const user = new User({ username, password: hashedPassword });
-        await user.save();
-        
-        res.redirect('/login');
-    } else {
-        res.redirect('/login');
+        const adminCount = await User.countDocuments();
+        if (adminCount === 0) {
+            const { username, password } = req.body;
+            console.log('Setting up admin user:', username);
+            const hashedPassword = await bcrypt.hash(password, 10);
+            const user = new User({ username, password: hashedPassword });
+            await user.save();
+            console.log('Admin user created successfully');
+
+            req.flash('success', 'Admin user created successfully. Please log in.');
+            return res.redirect(302, '/login');
+        } else {
+            console.log('Admin user already exists');
+            req.flash('info', 'Admin user already exists.');
+            return res.redirect(302, '/login');
+        }
+    } catch (error) {
+        console.error('Error in setup route:', error);
+        req.flash('error', 'An error occurred during setup. Please try again.');
+        return res.redirect(302, '/setup');
     }
 });
 
@@ -162,7 +176,8 @@ app.get('/login', (req, res) => {
         listType: occasion[LIST_TYPE],
         messages: {
             error: req.flash('error'),
-            success: req.flash('success')
+            success: req.flash('success'),
+            info: req.flash('info')
         }
     });
 });
@@ -170,11 +185,27 @@ app.get('/login', (req, res) => {
 app.post('/login', [
     body('username').trim().escape(),
     body('password').trim()
-], passport.authenticate('local', {
-    successRedirect: '/admin',
-    failureRedirect: '/login',
-    failureFlash: true
-}));
+], (req, res, next) => {  
+    passport.authenticate('local', (err, user, info) => {
+        if (err) {
+            console.error('Error during authentication:', err);
+            return next(err);
+        }
+        if (!user) {
+            console.log('Authentication failed:', info.message);
+            req.flash('error', info.message);
+            return res.redirect('/login');
+        }
+        req.logIn(user, (err) => {
+            if (err) {
+                console.error('Error during login:', err);
+                return next(err);
+            }
+            console.log('User logged in successfully:', user.username);
+            return res.redirect('/admin');
+        });
+    })(req, res, next);
+});
 
 app.get('/logout', (req, res) => {
     req.logout((err) => {

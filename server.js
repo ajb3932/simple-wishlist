@@ -14,7 +14,7 @@ const flash = require('express-flash');
 
 const CURRENCY = process.env.CURRENCY || 'GBP';
 const LIST_NAME = process.env.LIST_NAME || 'My Wishlist';
-const LIST_TYPE = process.env.LIST_TYPE || 'xmas';
+const LIST_TYPE = process.env.LIST_TYPE || 'bday';
 const DBHOST = process.env.DBHOST || 'localhost:27017';
 const DBNAME = process.env.DBNAME || 'simple-wishlist';
 const PORT = process.env.PORT || 8092;

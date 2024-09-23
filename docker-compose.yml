@@ -1,11 +1,13 @@
 version: '3'
 services:
-  app:
-    image: ajb3932/simple-wishlist
+  wishlist:
+    image: ajb3932/simple-wishlist:latest
+    container_name: wishlist
+    hostname: wishlist
     ports:
-      - "8092:8092"
+      - 8092:8092
     environment:
-      - DB="mongodb:27017"
+      - DBHOST=mongodb:27017
       - CURRENCY=USD
       - LIST_NAME=My Wishlist
       - LIST_TYPE=bday
@@ -14,6 +16,8 @@ services:
 
   mongodb:
     image: mongo:latest
+    container_name: wishlist-db
+    hostname: mongodb
     volumes:
       - mongodb_data:/data/db
 

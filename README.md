@@ -9,7 +9,13 @@ It features a secure admin panel for adding and deleting items, while family and
 
 💁 Please be kind, this is my first Node.Js app.
 
-### 🐳 Docker 
+## 📷 Screenshot 
+
+<img src="https://raw.githubusercontent.com/ajb3932/simple-wishlist/refs/heads/main/public/images/Screenshot%202024-09-24.png" title="App Screenshot" style="max-width:100%;"/>
+
+
+
+## 🐳 Docker 
 
 **Docker Compose:**
 
@@ -49,7 +55,7 @@ volumes:
 docker run -d -p 8092:8092 -e DBHOST=10.0.0.10:27017 ajb3932/simple-wishlist
 ```
 
-### 🌍 Environment Variables
+## 🌍 Environment Variables
 
 The following Environment Variables are available:
 
@@ -62,11 +68,11 @@ The following Environment Variables are available:
 | `DBNAME`      | Set the name of the database              | `any_string`              | `simple-wishlist` |
 | `PORT`        | Change the port the application runs on   | `[PORT]`                  | `8092`            |
 
-### 🚀 First Run
+## 🚀 First Run
 
 When the app first runs it will take you to `/setup` where you will be asked to set up an admin login user.
 
-### 💻 Usage
+## 💻 Usage
 
 **`/`**
 The public wishlist page is the root of the web app.
@@ -87,7 +93,7 @@ Available fields to add an item:
 **`/setup`**
 Only used on the first run and will not be available once an admin user has been set up.
 
-### 🙋 I want to run this myself
+## 🙋 I want to run this myself
 
 🐳 Docker
 ``` bash

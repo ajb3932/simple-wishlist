@@ -54,7 +54,6 @@ const connectWithRetry = (retries) => {
     });
 };
 
-// Start the connection process with 3 retries
 connectWithRetry(3);
 
 app.use(session({

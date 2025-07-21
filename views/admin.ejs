@@ -39,7 +39,7 @@
                     <% items.forEach(item => { %>
                     <tr>
                         <td><%= item.name %></td>
-                        <td><%= currencySymbol %><%= item.price %></td>
+                        <td><%= currencySymbol %><%= item.price.toFixed(2) %></td>
                         <td><a href="<%= item.url %>" target="_blank">View</a></td>
                         <td><div class="img-container"><img src="<%= item.imageUrl %>" alt="<%= item.name %>"></div></td>
                         <td>

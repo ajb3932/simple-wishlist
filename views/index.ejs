@@ -32,7 +32,7 @@
                     <tr>
                         <td data-label="Image"><div class="img-container"><img src="<%= item.imageUrl %>" alt="<%= item.name %>"></div></td>
                         <td data-label="Name"><%= item.name %></td>
-                        <td data-label="Price"><%= currencySymbol %><%= item.price %></td>
+                        <td data-label="Price"><%= currencySymbol %><%= item.price.toFixed(2) %></td>
                         <td data-label="URL"><a href="<%= item.url %>">View</a></td>
                         <td data-label="Action">
                             <form action="/purchase/<%= item._id %>" method="POST">
@@ -62,7 +62,7 @@
                     <tr>
                         <td data-label="Image"><div class="img-container"><img src="<%= item.imageUrl %>" alt="<%= item.name %>"></div></td>
                         <td data-label="Name"><%= item.name %></td>
-                        <td data-label="Price"><%= currencySymbol %><%= item.price %></td>
+                        <td data-label="Price"><%= currencySymbol %><%= item.price.toFixed(2) %></td>
                         <td data-label="URL"><a href="<%= item.url %>">View</a></td>
                         <td data-label="Action">
                             <form action="/restore/<%= item._id %>" method="POST">
